@@ -1,6 +1,7 @@
 package com.social.backend.auth.repository;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,4 +24,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
                         "where s.user.id = :userId and s.isActive = true")
         int deactivateAllByUserId(@Param("userId") Long userId, @Param("now") Instant now);
 
+        @Query("select s from Session s where s.isActive = true and s.user.id = :userId")
+        List<Session> findActiveSessions(long userId);
 }

@@ -88,7 +88,8 @@ public class AuthService {
     public AuthTokensResponse refresh(String rawRefreshToken) {
         IssuedRefreshToken newRefreshToken = refreshTokenService.rotate(rawRefreshToken);
         AccessToken newAccessToken = jwtService
-                .generateAccessToken(newRefreshToken.refreshToken().getSession().getUser());
+                .generateAccessToken(newRefreshToken.refreshToken().getSession().getUser(),
+                        newRefreshToken.refreshToken().getSession());
 
         return AuthTokensResponse.bearer(
                 newAccessToken.accessToken(),
@@ -100,11 +101,16 @@ public class AuthService {
 
         IssuedRefreshToken refresh = refreshTokenService.issueRefreshToken(session, user);
 
-        AccessToken access = jwtService.generateAccessToken(user);
+        AccessToken access = jwtService.generateAccessToken(user, session);
 
         return AuthTokensResponse.bearer(
                 access.accessToken(),
                 refresh.rawRefreshToken());
+    }
+
+    @Transactional
+    public void logout(String rawToken) {
+        refreshTokenService.revokeByRawToken(rawToken);
     }
 
     private Optional<User> findByIdentifier(String identifier) {

@@ -9,6 +9,7 @@ import javax.crypto.SecretKey;
 
 import org.springframework.stereotype.Service;
 
+import com.social.backend.auth.entity.Session;
 import com.social.backend.security.config.JwtProperties;
 import com.social.backend.security.principal.AuthenticatedUser;
 import com.social.backend.user.entity.User;
@@ -25,6 +26,7 @@ public class JwtService {
 
     private static final String CLAIM_ROLE = "role";
     private static final String CLAIM_EMAIL = "email";
+    private static final String CLAIM_SESSION_ID = "session_id";
 
     private final JwtProperties jwtProperties;
 
@@ -39,7 +41,7 @@ public class JwtService {
         this.secretKey = Keys.hmacShaKeyFor(byteKey);
     }
 
-    public AccessToken generateAccessToken(User user) {
+    public AccessToken generateAccessToken(User user, Session session) {
 
         Instant now = Instant.now();
         Instant expiresAt = now.plus(jwtProperties.accessTokenTtl());
@@ -53,6 +55,7 @@ public class JwtService {
                 .expiration(Date.from(expiresAt))
                 .claim(CLAIM_EMAIL, user.getEmail())
                 .claim(CLAIM_ROLE, user.getUserRole().name())
+                .claim(CLAIM_SESSION_ID, String.valueOf(session.getId()))
                 .signWith(secretKey)
                 .compact();
 
@@ -74,8 +77,8 @@ public class JwtService {
         Long userId = Long.parseLong(claims.getSubject());
         String email = claims.get(CLAIM_EMAIL, String.class);
         UserRole role = UserRole.valueOf(claims.get(CLAIM_ROLE, String.class));
-
-        return new AuthenticatedUser(userId, email, role);
+        Long sessionId = Long.parseLong(claims.get(CLAIM_SESSION_ID, String.class));
+        return new AuthenticatedUser(userId, email, sessionId, role);
     }
 
     public record AccessToken(

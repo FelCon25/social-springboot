@@ -81,6 +81,21 @@ public class RefreshTokenService {
 
     }
 
+    @Transactional
+    public void revokeByRawToken(String rawRefreshToken) {
+        String hashed = TokenHasher.sha256(rawRefreshToken);
+        RefreshToken token = refreshTokenRepository.findByHashedToken(hashed)
+                .orElseThrow(() -> new InvalidRefreshTokenException());
+
+        Session session = token.getSession();
+        Instant now = Instant.now();
+        token.setIsRevoked(true);
+
+        refreshTokenRepository.revokeAllBySessionId(session.getId(), now);
+        sessionRepository.deactivateById(session.getId(), now);
+
+    }
+
     public record IssuedRefreshToken(
             RefreshToken refreshToken, String rawRefreshToken) {
     }

@@ -1,10 +1,12 @@
 package com.social.backend.auth.service;
 
 import java.time.Instant;
+import java.util.List;
 
 import org.springframework.stereotype.Service;
 
 import com.social.backend.auth.config.AuthProperties;
+import com.social.backend.auth.dto.SessionResponse;
 import com.social.backend.auth.entity.Session;
 import com.social.backend.auth.repository.SessionRepository;
 import com.social.backend.user.entity.User;
@@ -33,5 +35,13 @@ public class SessionService {
                 .build();
 
         return sessionRepository.save(session);
+    }
+
+    public List<SessionResponse> getCurrentDeviceSessions(Long userId) {
+        List<Session> sessions = sessionRepository.findActiveSessions(userId);
+
+        return sessions.stream()
+                .map(SessionResponse::toSessionResponse)
+                .toList();
     }
 }

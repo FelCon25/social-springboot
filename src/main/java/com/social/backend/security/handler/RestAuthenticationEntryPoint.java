@@ -26,9 +26,9 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
             AuthenticationException authException) throws IOException {
 
-        com.social.backend.common.exception.ApiError body = ApiError.of(
+        ApiError body = ApiError.of(
                 HttpStatus.UNAUTHORIZED.value(),
-                "UNAUTHORIZED",
+                "INVALID_ACCESS_TOKEN",
                 "Authentication required",
                 request.getRequestURI());
 

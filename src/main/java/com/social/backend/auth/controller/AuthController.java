@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.social.backend.auth.dto.AuthTokensResponse;
 import com.social.backend.auth.dto.LoginRequest;
+import com.social.backend.auth.dto.LogoutRequest;
 import com.social.backend.auth.dto.RefreshTokenRequest;
 import com.social.backend.auth.dto.RegisterRequest;
 import com.social.backend.auth.service.AuthService;
@@ -41,6 +42,12 @@ public class AuthController {
             HttpServletRequest httpRequest) {
         return authService.login(loginRequest, RequestMetadata.userAgent(httpRequest),
                 RequestMetadata.clientIp(httpRequest));
+    }
+
+    @PostMapping("/logout")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@Valid @RequestBody LogoutRequest logoutRequest) {
+        authService.logout(logoutRequest.refreshToken());
     }
 
     @PostMapping("/refresh")
