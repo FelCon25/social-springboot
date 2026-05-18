@@ -23,6 +23,6 @@ public class SessionController {
 
     @GetMapping("/")
     public List<SessionResponse> getActiveSessions(@AuthenticationPrincipal AuthenticatedUser principal) {
-        return sessionService.getCurrentDeviceSessions(principal.id());
+        return sessionService.getCurrentDeviceSessions(principal.id(), principal.sessionId());
     }
 }

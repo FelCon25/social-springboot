@@ -37,11 +37,11 @@ public class SessionService {
         return sessionRepository.save(session);
     }
 
-    public List<SessionResponse> getCurrentDeviceSessions(Long userId) {
+    public List<SessionResponse> getCurrentDeviceSessions(Long userId, Long currentSessionId) {
         List<Session> sessions = sessionRepository.findActiveSessions(userId);
 
         return sessions.stream()
-                .map(SessionResponse::toSessionResponse)
+                .map(s -> SessionResponse.toSessionResponse(s, currentSessionId))
                 .toList();
     }
 }

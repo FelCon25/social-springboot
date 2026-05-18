@@ -25,5 +25,5 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
         int deactivateAllByUserId(@Param("userId") Long userId, @Param("now") Instant now);
 
         @Query("select s from Session s where s.isActive = true and s.user.id = :userId")
-        List<Session> findActiveSessions(long userId);
+        List<Session> findActiveSessions(@Param("userId") long userId);
 }

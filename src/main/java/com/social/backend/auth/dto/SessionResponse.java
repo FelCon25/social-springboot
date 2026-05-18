@@ -9,15 +9,17 @@ public record SessionResponse(
                 String ipAddress,
                 String userAgent,
                 Instant createdAt,
-                Instant expiresAt) {
+                Instant expiresAt,
+                boolean isCurrent) {
 
-        public static SessionResponse toSessionResponse(Session session) {
+        public static SessionResponse toSessionResponse(Session session, Long currentSessionId) {
                 return new SessionResponse(
                                 session.getId(),
                                 session.getIpAddress(),
                                 session.getUserAgent(),
                                 session.getCreatedAt(),
-                                session.getExpiresAt());
+                                session.getExpiresAt(),
+                                session.getId().equals(currentSessionId));
         }
 
 }
